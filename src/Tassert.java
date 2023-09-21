@@ -11,19 +11,11 @@ public class Tassert {
 
     public int calculateTASSERT() {
         int tassert = 0;
-
         try (BufferedReader reader = new BufferedReader(new FileReader(this.path))) {
             String line;
-
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
-
-                if (line.contains("org.junit.Assert")) {
-                    // Check for an import statement of org.junit.Assert
-                    continue;
-                }
-
-                if (line.matches(".*Assert\\..*\\(.*\\);")) {
+                if (line.matches(".*assert.*")) {
                     // Check for an assertion method call pattern
                     tassert++;
                 }

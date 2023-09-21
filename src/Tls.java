@@ -25,7 +25,7 @@ public class Tls {
     public FileObject createFileObject(String filePath){
         File file = new File(filePath);
         String fileName = file.getName();
-        
+
         Path source = Paths.get(this.pathString.getPath());
         Path relative = Paths.get(file.getPath());
         Path path = source.relativize(relative);
