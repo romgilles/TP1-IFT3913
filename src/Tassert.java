@@ -15,8 +15,10 @@ public class Tassert {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
+                //todo : check a good regex
                 if (line.matches(".*assert.*")) {
                     // Check for an assertion method call pattern
+                    
                     tassert++;
                 }
             }

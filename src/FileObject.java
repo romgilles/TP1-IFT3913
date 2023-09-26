@@ -12,7 +12,7 @@ public class FileObject {
         this.name = name;
         this.tloc = tloc;
         this.tassert = tassert;
-        this.tcmp = (double) tloc/tassert;
+        this.tcmp = (double) tloc / tassert;
     }
 
     public String toCsv() {
