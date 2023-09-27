@@ -12,6 +12,8 @@ public class Tls {
     
     public Tls(File pathString) {
         this.pathString = pathString;
+        getJavaFiles();
+        createFileObject2();
     }
 
      public void createFileObject2(){
@@ -69,4 +71,8 @@ public class Tls {
         }
         return ;
     }
+    
+    public List<FileObject> getFileObjects() {
+    return fileObjectsList;
+}
 }
