@@ -3,9 +3,19 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Tloc {
+    
     private String path;
     public Tloc(String path) {
         this.path = path;
+    }
+
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            System.err.println("Usage: java Tloc <file>");
+            System.exit(1);
+        }
+        Tloc tloc = new Tloc(args[0]);
+        System.out.println(tloc.calculateTLOC());
     }
 
     public int calculateTLOC() {

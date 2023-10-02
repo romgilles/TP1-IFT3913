@@ -5,8 +5,20 @@ import java.io.IOException;
 public class Tassert {
     private String path;
 
+    
+
     public Tassert(String path) {
         this.path = path;
+    }
+
+    public static void main(String args[]){
+        if (args.length != 1) {
+            System.err.println("Usage: java Tassert <file>");
+            System.exit(1);
+        }
+        Tassert tassert = new Tassert(args[0]);
+        System.out.println(tassert.calculateTASSERT());
+
     }
 
     public int calculateTASSERT() {
@@ -18,7 +30,6 @@ public class Tassert {
                 //todo : check a good regex
                 if (line.matches(".*assert.*")) {
                     // Check for an assertion method call pattern
-                    
                     tassert++;
                 }
             }

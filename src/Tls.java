@@ -1,4 +1,8 @@
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -8,15 +12,37 @@ public class Tls {
     private File pathString;
     private ArrayList<String> javaFileList = new ArrayList<>();
     private ArrayList<FileObject> fileObjectsList = new ArrayList<>();
-
     
     public Tls(File pathString) {
         this.pathString = pathString;
-        getJavaFiles();
-        createFileObject2();
+    }
+    public static void main(String args[]){
+        String outputFile = null;
+        String entryPath = null;
+        
+        if (args.length == 0) {
+            //obtenir le chemin absolu de ou se trouve le fichier Tls.java
+            File file = new File(".");
+            String path = file.getAbsolutePath();
+            System.out.println(path);
+            Tls tls = new Tls(new File(path));
+            tls.getJavaFiles();
+            tls.createFileObject2();
+        }
+
+        if (args.length == 3 && "-o".equals(args[0])){
+            outputFile = args[1];
+            entryPath = args[2];
+            File file = new File(entryPath);
+            Tls tls = new Tls(file);
+            tls.getJavaFiles();
+            tls.createFileObject2();
+            tls.generateCsvFile(outputFile);
+        }
+        
     }
 
-     public void createFileObject2(){
+    public void createFileObject2(){
         for (String string : javaFileList) {
             FileObject fileObject = createFileObject(string);
             System.out.println(fileObject.toCsv());
@@ -53,15 +79,15 @@ public class Tls {
     }
 
     public void getJavaFiles(){
-        getJavaFiles(pathString);
+        getJavaFiles(this.pathString);
     }
 
     private void getJavaFiles(File pathString) {
 
         File[] files = pathString.listFiles();
-        
         for (File file : files) {
             if (file.isDirectory()) {
+                System.out.println("Dossier: " + file.getName());
                 getJavaFiles(file);
             } 
             else if (file.getName().endsWith(".java")) {
@@ -72,7 +98,37 @@ public class Tls {
         return ;
     }
     
-    public List<FileObject> getFileObjects() {
-    return fileObjectsList;
-}
+    public ArrayList<FileObject> getFileObjects() {
+        return fileObjectsList;
+    }
+
+    public int generateCsvFile(String outputPath){
+        String fileName = "output.csv";
+
+        Path directoryPath = Paths.get(outputPath);
+        Path filePath = directoryPath.resolve(fileName);
+        try {
+            if (Files.exists(directoryPath) && Files.isDirectory(directoryPath)) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toString(), false));
+                for(int i= 0; i < fileObjectsList.size(); i++){
+                    FileObject fileObject = fileObjectsList.get(i);
+                    String line = fileObject.toCsv();
+                    writer.write(line);
+                    writer.newLine();
+                }
+                writer.close();
+                System.out.println("Le fichier " + fileName + " a été créé avec succès.");       
+
+            }
+            else {
+                System.out.println("Le dossier spécifié n'existe pas.");
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }
+        
+            return 1;
+        }
+        
 }
