@@ -1,0 +1,28 @@
+Analysons dans un premier temps les resultat que nous avons eu pour chaque seuil :
+En ce qui concerne le seuil de 10% , on  a trouvé qu’il existe 3 classe suspecte qui sont : 
+./java\org\jfree\chart\renderer\category\BoxAndWhiskerRendererTest.java,org\jfree\chart\renderer\category,BoxAndWhiskerRendererTest.java,307,38,8.08
+./java\org\jfree\chart\swing\ChartPanelTest.java,org\jfree\chart\swing,ChartPanelTest.java,216,23,9.39
+./java\org\jfree\data\time\YearTest.java,org\jfree\data\time,YearTest.java,328,47,6.98
+
+Sachant que notre analyse porte sur un  nombre de fichier exactement egale a 359 , ne trouver que trois classes qui sont à la fois parmis les 36 premieres en termes  de  tloc le plus élévé  et   TCMP le plus élévé, est relativement peu.
+ Cela peut s’expliquer par le fais que notre échantillion  est  bien structurée , en d’autres termes les developpeurs ont pris des mesures pour eviter une complixé a la fois dans le tcmp et tloc .
+
+Notons cependant qu’une complexité dans ces deux unités n’est pas forcément mauvaise puisque dans plusieurs cas nous n’avons tout simplement pas le choix et que nous sommes obligés de  prioriser le bon fonctionnement a la complexité . 
+
+Pour ce qui est des seuils a 5% et 1 % ; nous avons les resultats suivant :
+Classes suspectes : 
+Donc aucune classe n’est suspecte pour ces deux seuils. 
+On peut expliquer cela par  le fait que les critères de complexité pour ces seuils sont encore plus restrictifs. 
+En effet,  atteindre un tel niveau de complexité dans un ensemble relativement petit puisque 1% et 5% represente respectivement 3.59 et 17,95  classes nécessite une complexité excepetionnelement elevée en termes de tloc et Tcmp. 
+Ces resultat sont rassurant puisque de tels classes pourrait etre problematique et influencer les performances de notre application . 
+
+Passons maintenent aux questions de l’enoncé : 
+L’heuristique de tropcomp, semble-t-elle de vraiment trouver du code de test trop complexe?
+
+TropComp trouve effectivement du code trop complexe et donc susceptible d’etre problematique  dans certains cas  , cependant il faut prendre en compte que le seuil doit etre choisis d’une manière bien precise et non hasardeuse .
+Ainsi si nous voulons trouver des classes suspectes dans un dosiers X , avec un bon seuil , la sortie de notre programme serait pertinantes . Ceci n’est valable que si nous considerons la compléxité comme mesurable à partir du Tcmp et Tloc.
+ Ce point nous ramene naturellement a notre deuxeusieme question. En effet, nous pouvons certainement ameliorer Tropcomp et ceci passe essentiellement par l’ajout de nouvelles metriques pour definir la complixeté d’une classe .
+La profondeur d’heritage ou bien l’utilisation de thread peuvent constituer des metriques pertinantes . 
+Un autre point interessant à prendre en compte c’est de definir le seuil d’une manière plus precise et plus adapté au nombre de fichiers qu’on a et a l’ecart type present pour l’ensemble du jeu du donnée. Ainsi en ameliorant la valeur du seuil , cela rendra les sorties du programme Tropcomp plus expressif et adapté a chaque situation. 
+
+Finalement nous pouvons conclure que certes Tropcomp donne des resultats expressif si on considere la complexité comme dependante du Tcmp et Tloc cependant il existe plusieurs failles presente dans l’interpretation possible de ces valeurs ,donc  cette fonction n’est clairement pas optimale et peut etre grandement ameliorée . 
