@@ -12,9 +12,17 @@ public class Tls {
     private File pathString;
     private ArrayList<String> javaFileList = new ArrayList<>();
     private ArrayList<FileObject> fileObjectsList = new ArrayList<>();
-    
+    private boolean mute = false; 
     public Tls(File pathString) {
+
         this.pathString = pathString;
+    }
+    public void setMute(boolean mute) {
+        this.mute = mute;
+    }
+    public void init() {
+        getJavaFiles();
+        createFileObject2();
     }
     public static void main(String args[]){
         String outputFile = null;
@@ -45,7 +53,9 @@ public class Tls {
     public void createFileObject2(){
         for (String string : javaFileList) {
             FileObject fileObject = createFileObject(string);
-            System.out.println(fileObject.toCsv());
+            if (!mute) {
+                System.out.println(fileObject.toCsv());
+            }
             fileObjectsList.add(fileObject);
         }
     } 
@@ -87,7 +97,6 @@ public class Tls {
         File[] files = pathString.listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
-                System.out.println("Dossier: " + file.getName());
                 getJavaFiles(file);
             } 
             else if (file.getName().endsWith(".java")) {
