@@ -14,14 +14,11 @@ public class TropComp {
         this.directory = new File(directoryPath);
         this.threshold = threshold;
     }
-
-    // Récupère les classes suspectes basées sur les valeurs de seuil pour tloc et tcmp
     public List<FileObject> getSuspectClasses() {
         Tls tls = new Tls(directory);
         tls.setMute(true);
         tls.init();
         List<FileObject> allFileObjects = tls.getFileObjects();
-        // Déterminer la valeur de seuil pour tloc et tcmp
         int tlocThresholdValue = getThresholdValueForTloc(allFileObjects);
         double tcmpThresholdValue = getThresholdValueForTcmp(allFileObjects);
         // Filtrer et renvoyer les classes suspectes basées sur les valeurs de seuil
