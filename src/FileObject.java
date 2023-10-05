@@ -1,6 +1,7 @@
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
+//classer pour mieux représenter et manipuler les données des fichiers
 public class FileObject {
     private String path;
     private String packageName;
@@ -22,7 +23,7 @@ public class FileObject {
             this.tcmp = (double) tloc / tassert;
         }
     }
-
+    //convertit les données en format csv
     public String toCsv() {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setDecimalSeparator('.');

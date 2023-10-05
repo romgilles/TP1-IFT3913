@@ -13,10 +13,12 @@ public class Tls {
     private ArrayList<String> javaFileList = new ArrayList<>();
     private ArrayList<FileObject> fileObjectsList = new ArrayList<>();
     private boolean mute = false; 
+    
+    
     public Tls(File pathString) {
-
         this.pathString = pathString;
     }
+
     public void setMute(boolean mute) {
         this.mute = mute;
     }
@@ -30,9 +32,8 @@ public class Tls {
         
         if (args.length == 0) {
             //obtenir le chemin absolu de ou se trouve le fichier Tls.java
-            File file = new File(".");
+            File file = new File("");
             String path = file.getAbsolutePath();
-            System.out.println(path);
             Tls tls = new Tls(new File(path));
             tls.getJavaFiles();
             tls.createFileObject2();
@@ -58,6 +59,7 @@ public class Tls {
             }
             fileObjectsList.add(fileObject);
         }
+        return ;
     } 
 
     public FileObject createFileObject(String filePath){
@@ -72,10 +74,12 @@ public class Tls {
         String packageName = "";
         
         int index = filePath.indexOf("java");
-        if (index != -1) {
+
+        if (index != -1 && index + 5 < filePath.length()) {
             packageName = filePath.substring(index + 5, filePath.length() - fileName.length() - 1);
         }
         packageName = packageName.replace('/', '.');
+        
         
         String pathString = path.toString();
 
@@ -93,7 +97,6 @@ public class Tls {
     }
 
     private void getJavaFiles(File pathString) {
-
         File[] files = pathString.listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
@@ -133,7 +136,6 @@ public class Tls {
                 System.out.println("Le dossier spécifié n'existe pas.");
             }
         } catch (IOException e) {
-            System.out.println(e);
             e.printStackTrace();
         }
         

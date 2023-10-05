@@ -4,6 +4,7 @@ import java.io.IOException;
 
 public class Tloc {
     
+    //chemin du fichier a analyser
     private String path;
     public Tloc(String path) {
         this.path = path;
@@ -20,7 +21,7 @@ public class Tloc {
 
     public int calculateTLOC() {
         int tloc = 0;
-
+        //on lit le fichier ligne par ligne
         try (BufferedReader reader = new BufferedReader(new FileReader(this.path))) {
             String line;
             boolean inBlockComment = false;
