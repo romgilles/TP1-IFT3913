@@ -24,7 +24,8 @@ Tls: pour cette classe, nous avons dabord réfléchis à la structure de la clas
 puis nous avons demandé à chat gpt de nous générer les fonctions une à une
 (l'ia ne nous donnait pas de résultats suffisamment clairs avec nos requêtes complexes )
 - comment faire une fonction pour parcourir un dossier récursivement ?
-- comment découper / manipuler les chemins de fichiers pour qu'ils correspondent à nos besoin dans le TP ? 
+- comment découper / manipuler les chemins de fichiers pour qu'ils correspondent à nos besoin dans le TP ?   
+
 Le reste du code a été fait "à la main" + assistance de co pilot 
 
 TropComp : A REMPLIR MAHMOUD 
