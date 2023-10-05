@@ -3,7 +3,7 @@
 - ROMAN GILLES-LESAGE 20175122
 - MAHMOUD LABIDI
 
-Précisions sur le TP : 
+## Précisions sur le TP : 
 
 Les .jar fonctionnent mais nous les avons testés seulement sur environnement linux / mac.  
 Pour la question 3, une imprécision de la consigne nous a amené à prendre une décision,
@@ -12,7 +12,7 @@ dans le cas ou il ne génère pas de csv, nous avons préféré procéder de la 
 - si on lance le programme sans argument, il faut que celui ci soit éxécuté à l'emplacement du dossier à analyser
 - si on lance le programme avec les arguments optionnels, alors on peut l'éxécuter de n'importe où cela ne change rien
 
-Nous avons utilisé l'ia générative dans notre TP1 de la manière suivante: 
+## Nous avons utilisé l'ia générative dans notre TP1 de la manière suivante: 
 
 Tloc : code entièrement généré par chat gpt sauf pour la méthode main, il y'a probablement du code inutile mais ça fonctionne  
 
