@@ -3,6 +3,16 @@
 - ROMAN GILLES-LESAGE 20175122
 - MAHMOUD LABIDI
 
+## Comment utiliser les .jar 
+
+Tloc : java -jar Tloc.jar "chemin_fichier"
+
+Tassert : java -jar Tassert.jar "chemin_fichier"
+
+Tls : java -jar Tls.jar (à l'intérieur d'un dossier) ou java -jar Tls.jar -o "chemin_dossier_out" "chemin_dossier_in" 
+
+TropComp : 
+
 ## Précisions sur le TP : 
 
 Les .jar fonctionnent mais nous les avons testés seulement sur environnement linux / mac.  
@@ -12,7 +22,8 @@ dans le cas ou il ne génère pas de csv, nous avons préféré procéder de la 
 - si on lance le programme sans argument, il faut que celui ci soit éxécuté à l'emplacement du dossier à analyser
 - si on lance le programme avec les arguments optionnels, alors on peut l'éxécuter de n'importe où cela ne change rien
 
-## Nous avons utilisé l'ia générative dans notre TP1 de la manière suivante: 
+## Utilisation d'ia génératives : 
+Nous avons utilisé les ias génératives dans notre tp de la manière suivante:
 
 Tloc : code entièrement généré par chat gpt sauf pour la méthode main, il y'a probablement du code inutile mais ça fonctionne  
 
