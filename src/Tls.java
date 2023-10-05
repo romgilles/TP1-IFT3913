@@ -87,7 +87,6 @@ public class Tls {
         File[] files = pathString.listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
-                System.out.println("Dossier: " + file.getName());
                 getJavaFiles(file);
             } 
             else if (file.getName().endsWith(".java")) {
