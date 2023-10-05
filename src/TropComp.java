@@ -1,25 +1,26 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.io.IOException;
 
 public class TropComp {
     private File directory;
     private double threshold;
+
     public TropComp(String directoryPath, double threshold) {
         this.directory = new File(directoryPath);
         this.threshold = threshold;
     }
-    // Récupère les classes suspectes basées sur les valeurs de seuil pour tloc et tcmp
     public List<FileObject> getSuspectClasses() {
         Tls tls = new Tls(directory);
-        tls.getJavaFiles();
+        tls.setMute(true);
+        tls.init();
         List<FileObject> allFileObjects = tls.getFileObjects();
-        // Déterminer la valeur de seuil pour tloc
         int tlocThresholdValue = getThresholdValueForTloc(allFileObjects);
-        // Déterminer la valeur de seuil pour tcmp
         double tcmpThresholdValue = getThresholdValueForTcmp(allFileObjects);
-
         // Filtrer et renvoyer les classes suspectes basées sur les valeurs de seuil
         return allFileObjects.stream()
                 .filter(file -> Integer.parseInt(file.toCsv().split(",")[3]) >= tlocThresholdValue &&
@@ -39,5 +40,49 @@ public class TropComp {
                 .collect(Collectors.toList());
         int tcmpThresholdIndex = (int) (sortedByTcmp.size() * (1 - threshold));
         return Double.parseDouble(sortedByTcmp.get(tcmpThresholdIndex).toCsv().split(",")[5]);
+    }
+    public static void main(String[] args) {
+        if (args.length < 1) {
+            System.err.println("Usage: TropComp [-o <chemin-à-la-sortie.csv>] <chemin-de-l'entrée> [<seuil>]");
+            return;
+        }
+        String outputPath = null;
+        String inputPath = null;
+        Double threshold = 0.1;  // Valeur par défaut si le seuil n'est pas précisé 
+        int argIndex = 0;
+        if ("-o".equals(args[argIndex])) {
+            outputPath = args[++argIndex];
+            argIndex++;
+        }
+
+        inputPath = args[argIndex];
+        if (args.length > argIndex + 1) {
+            try {
+                threshold = Double.parseDouble(args[argIndex + 1]);
+            } catch (NumberFormatException e) {
+                System.err.println("Erreur: Le seuil doit être un nombre valide.");
+                return;
+            }
+        }
+
+        TropComp tropComp = new TropComp(inputPath, threshold);
+        List<FileObject> suspectClasses = tropComp.getSuspectClasses();
+
+        if (outputPath != null) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath))) {
+                for (FileObject suspect : suspectClasses) {
+                    writer.write(suspect.toCsv());
+                    writer.newLine();
+                }
+                System.out.println("Le fichier CSV a été créé avec succès à l'emplacement: " + outputPath);
+            } catch (IOException e) {
+                System.err.println("Erreur lors de l'écriture du fichier CSV : " + e.getMessage());
+            }
+        } else {
+            System.out.println("classes suspectes : ");
+            for (FileObject suspect : suspectClasses) {
+                System.out.println(suspect.toCsv());
+            }
+        }
     }
 }
