@@ -18,7 +18,7 @@ TropComp :
 
 ## Précisions sur le TP : 
 
-Les .jar fonctionnent mais nous les avons testés seulement sur environnement linux / mac.  
+Les .jar fonctionnent mais nous les avons testés seulement sur environnement linux / mac. Il faut utiliser des chemins absolus pour chaque commande utilisée. 
 Pour la question 3, une imprécision de la consigne nous a amené à prendre une décision,
 étant donné que nous ne savions pas si le programme devait prendre en paramètre une entrée de dossier 
 dans le cas ou il ne génère pas de csv, nous avons préféré procéder de la manière suivante :   
