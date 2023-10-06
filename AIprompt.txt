@@ -1,27 +1,4 @@
-Précision sur le TP : 
-
-Les .jar fonctionnent mais nous les avons testés seulement sur environnement linux / mac. 
-Pour la question 3, une imprécision de la consigne nous a amené à prendre une décision,
-étant donné que nous ne savions pas si le programme devait prendre en paramètre une entrée de dossier 
-dans le cas ou il ne génère pas de csv, nous avons préféré procéder de la manière suivante : 
-    - si on lance le programme sans argument, il faut que celui ci soit éxécuté à l'emplacement du dossier à analyser
-    - si on lance le programme avec les arguments optionnels, alors on peut l'éxécuter de n'importe où cela ne change rien
-
-Nous avons utilisé l'ia générative dans notre TP1 de la manière suivante: 
-
-Tloc : code entièrement généré par chat gpt sauf pour la méthode main, il y'a probablement du code inutile mais ça fonctionne
-Tassert : idem mais pas de code inutile  
-Tls: pour cette classe, nous avons dabord réfléchis à la structure de la classe (comment articuler notre code, logique)
-puis nous avons demandé à chat gpt de nous générer les fonctions une à une 
-(l'ia ne nous donnait pas de résultats suffisamment clairs avec nos requêtes complexes )
-    * comment faire une fonction pour parcourir un dossier récursivement ?
-    * comment découper / manipuler les chemins de fichiers pour qu'ils correspondent à nos besoin dans le TP ? 
-Le reste du code a été fait "à la main" + assistance de co pilot 
-
-TropComp : A REMPLIR MAHMOUD 
-
-
-Prompt : 
+Prompt : ROMAN GILLES-LESAGE
 ---------------------------------------------------------------------------------------------------------------------
 Créez le programme tloc qui, étant donné un fichier source d'une classe de test java, calcule la métrique de taille
 TLOC : nombre de lignes de code non-vides qui ne sont pas de commentaires. Il doit juste sortir la valeur du TLOC à
@@ -1072,3 +1049,278 @@ Explication :
 .* : Correspond à n'importe quel caractère (ou à aucun caractère) zéro ou plusieurs fois.
 assert : Correspond au mot "assert".
 Ce regex fonctionnera pour toute séquence qui contient le mot "assert" quelque part, quelle que soit la casse (majuscules/minuscules).
+
+
+
+User:  
+J'ai besoin de créer une classe `TropComp` qui identifie les classes Java dans un répertoire basées sur certaines métriques. Est-ce que tu peux m'aider?
+
+ChatGPT : 
+Bien sûr! Pour commencer, pouvez-vous m'en dire plus sur les métriques que vous souhaitez utiliser pour filtrer les classes?
+
+User:
+ Je veux filtrer les classes en fonction de deux métriques: `tloc` et `tcmp`. J'ai une classe `Tls` qui peut analyser les fichiers et retourner une liste de `FileObject`. Chaque `FileObject` a une méthode `toCsv()` qui retourne une chaîne CSV avec ces métriques.voila le code de tls pour que avoir une idée d’ensemble sur le projet ; import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
+public class Tls {
+
+    private File pathString;
+    private ArrayList<String> javaFileList = new ArrayList<>();
+    private ArrayList<FileObject> fileObjectsList = new ArrayList<>();
+    private boolean mute = false; 
+    public Tls(File pathString) {
+
+        this.pathString = pathString;
+    }
+    public void setMute(boolean mute) {
+        this.mute = mute;
+    }
+    public void init() {
+        getJavaFiles();
+        createFileObject2();
+    }
+    public static void main(String args[]){
+        String outputFile = null;
+        String entryPath = null;
+        
+        if (args.length == 0) {
+            //obtenir le chemin absolu de ou se trouve le fichier Tls.java
+            File file = new File(".");
+            String path = file.getAbsolutePath();
+            System.out.println(path);
+            Tls tls = new Tls(new File(path));
+            tls.getJavaFiles();
+            tls.createFileObject2();
+        }
+
+        if (args.length == 3 && "-o".equals(args[0])){
+            outputFile = args[1];
+            entryPath = args[2];
+            File file = new File(entryPath);
+            Tls tls = new Tls(file);
+            tls.getJavaFiles();
+            tls.createFileObject2();
+            tls.generateCsvFile(outputFile);
+        }
+        
+    }
+
+    public void createFileObject2(){
+        for (String string : javaFileList) {
+            FileObject fileObject = createFileObject(string);
+            if (!mute) {
+                System.out.println(fileObject.toCsv());
+            }
+            fileObjectsList.add(fileObject);
+        }
+    } 
+
+    public FileObject createFileObject(String filePath){
+        File file = new File(filePath);
+        String fileName = file.getName();
+
+        Path source = Paths.get(this.pathString.getPath());
+        Path relative = Paths.get(file.getPath());
+        Path path = source.relativize(relative);
+
+        //obtenir le nom complet du package en remontant jusqu'à java et en enlevant le nom du fichier
+        String packageName = "";
+        
+        int index = filePath.indexOf("java");
+        if (index != -1) {
+            packageName = filePath.substring(index + 5, filePath.length() - fileName.length() - 1);
+        }
+        packageName = packageName.replace('/', '.');
+        
+        String pathString = path.toString();
+
+        Tloc tloc = new Tloc(filePath);
+        Tassert tassert = new Tassert(filePath);
+
+        int tlocValue = tloc.calculateTLOC();
+        int tassertValue = tassert.calculateTASSERT();
+        FileObject fileObject = new FileObject("./"+pathString, packageName, fileName, tlocValue, tassertValue);
+        return fileObject;
+    }
+
+    public void getJavaFiles(){
+        getJavaFiles(this.pathString);
+    }
+
+    private void getJavaFiles(File pathString) {
+
+        File[] files = pathString.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                getJavaFiles(file);
+            } 
+            else if (file.getName().endsWith(".java")) {
+                String filePath = file.getPath();
+                javaFileList.add(filePath);
+            }
+        }
+        return ;
+    }
+    
+    public ArrayList<FileObject> getFileObjects() {
+        return fileObjectsList;
+    }
+
+    public int generateCsvFile(String outputPath){
+        String fileName = "output.csv";
+
+        Path directoryPath = Paths.get(outputPath);
+        Path filePath = directoryPath.resolve(fileName);
+        try {
+            if (Files.exists(directoryPath) && Files.isDirectory(directoryPath)) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toString(), false));
+                for(int i= 0; i < fileObjectsList.size(); i++){
+                    FileObject fileObject = fileObjectsList.get(i);
+                    String line = fileObject.toCsv();
+                    writer.write(line);
+                    writer.newLine();
+                }
+                writer.close();
+                System.out.println("Le fichier " + fileName + " a été créé avec succès.");       
+
+            }
+            else {
+                System.out.println("Le dossier spécifié n'existe pas.");
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }
+        
+            return 1;
+        }
+        
+}
+
+
+ChatGPT: 
+D'accord. Donc si je comprends bien, vous voulez trier cette liste de `FileObject` en fonction des métriques `tloc` et `tcmp` et ensuite filtrer ceux qui dépassent un certain seuil?
+
+User:
+ Oui, c'est exact. De plus, je ne veux pas un seuil fixe. Je veux que le seuil soit déterminé en fonction d'un pourcentage de tous les fichiers. Par exemple, si je fixe le seuil à 10%, je veux filtrer les fichiers qui sont dans le top 10% pour ces métriques.
+
+ChatGPT : 
+Got it. Voici une manière de le faire:
+
+1. Tri des `FileObject` en fonction de `tloc` et `tcmp`.
+2. Détermination du seuil basé sur le pourcentage donné.
+3. Filtrage des `FileObject` qui dépassent ce seuil.
+
+Voici un exemple de comment vous pourriez déterminer la valeur de seuil pour `tloc`:
+
+```java
+private int getThresholdValueForTloc(List<FileObject> allFileObjects) {
+    List<FileObject> sortedByTloc = allFileObjects.stream()
+            .sorted(Comparator.comparingInt(file -> Integer.parseInt(file.toCsv().split(",")[3])))
+            .collect(Collectors.toList());
+    int tlocThresholdIndex = (int) (sortedByTloc.size() * (1 - threshold));
+    return Integer.parseInt(sortedByTloc.get(tlocThresholdIndex).toCsv().split(",")[3]);
+}
+```
+User: 
+Cela semble bien. Et pour `tcmp`?
+
+ChatGPT :
+ Pour `tcmp`, la logique est très similaire. Vous trierez simplement en fonction de `tcmp` et utiliserez le seuil approprié. Voici comment cela pourrait être fait:
+
+```java
+private double getThresholdValueForTcmp(List<FileObject> allFileObjects) {
+    List<FileObject> sortedByTcmp = allFileObjects.stream()
+            .sorted(Comparator.comparingDouble(file -> Double.parseDouble(file.toCsv().split(",")[5])))
+            .collect(Collectors.toList());
+    int tcmpThresholdIndex = (int) (sortedByTcmp.size() * (1 - threshold));
+    return Double.parseDouble(sortedByTcmp.get(tcmpThresholdIndex).toCsv().split(",")[5]);
+}
+```
+
+User: 
+Parfait! Maintenant, comment puis-je utiliser ces valeurs de seuil pour filtrer les `FileObject`?
+
+ChatGPT : 
+Une fois que vous avez les valeurs de seuil pour `tloc` et `tcmp`, vous pouvez utiliser le filtrage Java Stream pour obtenir les classes suspectes. Voici comment:
+
+```java
+public List<FileObject> getSuspectClasses() {
+    Tls tls = new Tls(directory);
+    tls.setMute(true);
+    tls.init();
+    List<FileObject> allFileObjects = tls.getFileObjects();
+
+    int tlocThresholdValue = getThresholdValueForTloc(allFileObjects);
+    double tcmpThresholdValue = getThresholdValueForTcmp(allFileObjects);
+
+    return allFileObjects.stream()
+            .filter(file -> Integer.parseInt(file.toCsv().split(",")[3]) >= tlocThresholdValue &&
+                            Double.parseDouble(file.toCsv().split(",")[5]) >= tcmpThresholdValue)
+            .collect(Collectors.toList());
+}
+```
+
+User:
+ C'est exactement ce que je cherchais. Enfin, je veux pouvoir exécuter cette logique depuis la ligne de commande et soit afficher les résultats à l'écran, soit les écrire dans un fichier CSV.
+
+ChatGPT :
+ Pour cela, vous pouvez ajouter une méthode `main` à `TropComp`. Dans cette méthode, vous pouvez traiter les arguments de la ligne de commande pour déterminer le chemin du répertoire, le seuil et le chemin du fichier de sortie, le cas échéant. Ensuite, vous pouvez soit écrire les résultats dans un fichier CSV, soit les afficher à l'écran.
+
+Voici comment vous pourriez mettre en œuvre cette logique:
+
+```java
+public static void main(String[] args) {
+    // ... gestion des arguments et logique d'écriture ...
+}
+```
+
+User:
+ Merci .
+
+ChatGPT:
+ C'était un plaisir de vous aider! Si vous avez d'autres questions, n'hésitez pas.
+---
+
+User:
+J'ai appliqué mon outil sur le projet Jfreechart contenant 359 fichier. J'ai été surpris de voir que pour des seuils de 5% et 1%, je n'avais aucun résultat. Est-ce normal?
+
+ChatGPT:
+ Il est possible que cela soit dû à la nature du code de test dans le projet JFreechart. Si la plupart des classes de test ont des métriques `tloc` et `tcmp` relativement basses, il se peut que très peu, voire aucune, n'atteignent les seuils de 1% et 5%. Cela pourrait indiquer que la majorité du code de test est relativement simple en termes de complexité, du moins selon les métriques que vous utilisez.
+
+User:
+ Cela a du sens. Mais cela m'amène à me demander sur l'utilité de tropcomp comme détecteur de problèmes de complexité. Est-ce que l'heuristique de tropcomp semble vraiment trouver du code de test trop complexe?
+
+ChatGPT: 
+L'efficacité de tropcomp dépend en grande partie des métriques que vous utilisez et de la manière dont vous définissez le "code trop complexe". Si votre outil ne trouve pas de code complexe pour les seuils de 1% et 5%, cela pourrait signifier plusieurs choses :
+
+1. Le code de test dans JFreechart est globalement bien écrit et n'a pas de parties excessivement complexes.
+2. Les métriques que vous utilisez (tloc et tcmp) ne capturent peut-être pas tous les aspects de la complexité que vous souhaitez évaluer.
+3. Le seuil que vous utilisez pourrait être trop conservateur. Peut-être qu'un seuil plus élevé pourrait capturer plus de classes suspectes.
+
+User:
+ Comment pourrions-nous améliorer tropcomp alors?
+
+ChatGPT : 
+Il y a plusieurs façons d'améliorer tropcomp:
+
+1. **Inclure plus de métriques** : Outre tloc et tcmp, vous pourriez inclure d'autres métriques comme la complexité cyclomatique ou le nombre de dépendances pour avoir une vue plus complète de la complexité.
+2. **Ajuster les seuils** : Comme mentionné, ajuster les seuils pourrait aider à capturer plus de classes suspectes. Vous pourriez également permettre à l'utilisateur de définir ses propres seuils.
+3. **Analyse qualitative** : Au lieu de se fier uniquement aux métriques, vous pourriez combiner une analyse quantitative avec une analyse qualitative. Par exemple, examiner le code manuellement pour voir s'il y a des parties qui semblent complexes mais qui ne sont pas capturées par vos métriques.
+
+User : 
+Ces suggestions sont utiles. Je vais les prendre en compte et réfléchir à comment je peux améliorer mon outil. 
+
+ChatGPT 
+: C'est une bonne approche. L'analyse de code est autant un art qu'une science. Les métriques peuvent fournir des indications, mais l'interprétation et le jugement humains sont tout aussi importants. Bonne chance avec votre travail sur tropcomp!
+
+
+
+
+
